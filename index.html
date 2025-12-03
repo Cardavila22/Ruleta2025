@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Ruleta</title>
+<link rel="icon" type="image/png" href="iconoPolaris.png" />
 <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
@@ -42,7 +43,7 @@ html,body{
   height:100%;
   margin:0;
   font-family:Inter,system-ui,Arial,sans-serif;
-  background:none; /* Quitamos el fondo azul */
+  background:none;
   color:var(--muted);
 }
 
@@ -71,11 +72,9 @@ html,body{
 .logo {
   height:70px;
   object-fit: contain;
-  border: 3px solid #FFD54A;
   border-radius: 8px;
   padding: 4px;
 }
-
 
 header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;}
 header h1{font-size:20px;margin:0;color:#fff;}
@@ -84,7 +83,7 @@ header p{margin:0;color:#9fb1c8;font-size:13px;}
 .wheel-wrap{position:relative;display:flex;align-items:center;justify-content:center;}
 canvas#wheel, canvas#wheelPrize{border-radius:50%;background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.02), transparent 20%);box-shadow:inset 0 6px 18px rgba(0,0,0,0.6), 0 8px 30px rgba(2,6,23,0.6);}
 .center-button{position:absolute;display:flex;align-items:center;justify-content:center;width:130px;height:130px;border-radius:50%;background:linear-gradient(180deg,#ffd54a,#ffb11b);color:#071025;font-weight:700;font-size:22px;box-shadow:0 6px 18px rgba(0,0,0,0.6);transform:translateY(0);cursor:pointer;user-select:none;}
-.center-number{font-size:28px;font-weight:800;color:#000000;letter-spacing:1px;}
+.center-number img{width:60px; height:60px; object-fit:contain;}
 .center-sub{font-size:12px;color:rgba(7,16,37,0.8);margin-top:6px;}
 .controls{padding:8px 6px;}
 .controls .box{background:rgba(188, 127, 127, 0.588);border-radius:10px;padding:14px;margin-bottom:12px;}
@@ -100,7 +99,19 @@ canvas#wheel, canvas#wheelPrize{border-radius:50%;background:radial-gradient(cir
 .pulse{animation:pulseWin 0.9s ease both;}
 .btn-close-custom{position:absolute;top:10px;right:10px;color:#fff;background:none;border:none;font-size:20px;cursor:pointer;}
 @keyframes pulseWin{0%{transform:scale(0.9)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
-@media (max-width:880px){.card{grid-template-columns:1fr;}}
+
+/* Responsive */
+@media (max-width:880px){
+  .card{grid-template-columns:1fr;}
+  .center-button{width:100px;height:100px;}
+  .center-number img{width:45px;height:45px;}
+  .center-sub{font-size:10px;}
+  canvas#wheel{width:100% !important; height:auto !important;}
+  canvas#wheelPrize{width:80% !important; height:auto !important;}
+  .modal-card{padding:16px;}
+  .modal-card h2{font-size:22px;}
+  .modal-number{font-size:36px;}
+}
 </style>
 </head>
 <body>
@@ -115,21 +126,22 @@ canvas#wheel, canvas#wheelPrize{border-radius:50%;background:radial-gradient(cir
   <div class="card" role="application" aria-label="Ruleta">
    <header>
   <div style="display:flex; align-items:center; gap:12px;">
-    <img src="logo-polaris.png" alt="Logo de la empresa" style="height:70px; object-fit:contain;">
-  
+    <img src="logo-polaris.png" alt="Logo de la empresa" class="logo">
   </div>
   <div>
     <button id="resetBtn" class="btn btn-outline-light">Reiniciar ruleta</button>
   </div>
 </header>
 
-    <div class="wheel-wrap" style="position:relative;">
+    <div class="wheel-wrap">
       <div class="indicator" aria-hidden="true"></div>
       <canvas id="wheel" width="600" height="600" role="img" aria-label="Ruleta de números"></canvas>
 
       <div class="center-button btn-accent" id="spinBtn" title="Girar">
         <div style="text-align:center">
-          <div class="center-number" id="centerNum">▶</div>
+          <div class="center-number" id="centerNum">
+            <img src="iconoPolaris.png" alt="Icono Empresa">
+          </div>
           <div class="center-sub">Girar</div>
         </div>
       </div>
@@ -156,12 +168,14 @@ canvas#wheel, canvas#wheelPrize{border-radius:50%;background:radial-gradient(cir
     <h2>¡Número ganador!</h2>
     <div class="modal-number" id="modalNumber">0</div>
     <div class="small mb-2">Felicidades — gira la ruleta para descubrir tu premio</div>
-    <div class="wheel-wrap mb-3" style="position:relative;">
+    <div class="wheel-wrap mb-3">
       <div class="indicator" aria-hidden="true" style="top:-8px;"></div>
       <canvas id="wheelPrize" width="300" height="300" role="img" aria-label="Ruleta de premios"></canvas>
       <div class="center-button btn-accent" id="spinPrizeBtn" title="Girar premio">
         <div style="text-align:center">
-          <div class="center-number" id="centerPrize">▶</div>
+          <div class="center-number" id="centerPrize">
+            <img src="iconoPolaris.png" alt="Icono Empresa">
+          </div>
           <div class="center-sub">Premio</div>
         </div>
       </div>
@@ -172,7 +186,9 @@ canvas#wheel, canvas#wheelPrize{border-radius:50%;background:radial-gradient(cir
   </div>
 </div>
 
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
 /* ------------------- Ruleta de números ------------------- */
 let sectors = Array.from({length:112},(_,i)=>({label:i+1,color:["#ffcd01","#685ca2","#029ede","#a7d02a","#232026","#e50304","#eb7108","#8f3389"][i%8],textColor:'#fff'}));
@@ -198,7 +214,6 @@ function drawWheel(rotation){
   ctx.beginPath(); ctx.arc(cx,cy,radius+4,0,Math.PI*2); ctx.strokeStyle='rgba(0,0,0,0.35)'; ctx.lineWidth=6; ctx.stroke();
 }
 drawWheel(rotation);
-
 
 
 /* ------------------- Ruleta de premios con stock ------------------- */
